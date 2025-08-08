@@ -7,24 +7,22 @@
   <meta name="description" content="おまるん元気にしてるかい？" />
   <style>
     :root {
-      --bg: #0b0b0c;               /* 黒に近い深い色で“映える” */
-      --fg: #f5f5f7;
-      --sub: #a1a1a6;
-      --ring: #2c2c2e;
-      --accent: #0a84ff;           /* Apple系ブルー */
-      --hover: #0060df;
-
-      /* 背景グラデ色（ライトでもダークでも綺麗に出るペア） */
-      --c1: 255, 85, 85;           /* 暖色(赤寄り) */
-      --c2: 80, 200, 255;          /* 寒色(シアン) */
-      --c3: 160, 120, 255;         /* 紫寄り */
+      --fg-light: #f5f5f7;
+      --fg-dark: #0a0a0a;
+      --sub-light: #a1a1a6;
+      --sub-dark: #6e6e73;
+      --accent: #0a84ff;
+      --hover: #0071e3;
+      --c1: 255, 255, 255;
+      --c2: 160, 160, 160;
+      --c3: 60, 60, 60;
     }
     @media (prefers-color-scheme: light) {
       :root {
-        --bg: #f5f5f7;
-        --fg: #0a0a0a;
-        --sub: #6e6e73;
-        --ring: #d2d2d7;
+        --fg-light: #0a0a0a;
+        --fg-dark: #f5f5f7;
+        --sub-light: #6e6e73;
+        --sub-dark: #a1a1a6;
         --accent: #0071e3;
         --hover: #005bb5;
       }
@@ -32,239 +30,183 @@
 
     html, body {
       margin: 0;
-      background: var(--bg);
-      color: var(--fg);
+      background: var(--fg-dark);
+      color: var(--fg-light);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-                   "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "YuGothic",
-                   "Meiryo", sans-serif;
+                   "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
       -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
       scroll-behavior: smooth;
     }
 
-    /* ===== パララックス背景（固定・超軽量） ===== */
+    /* 背景ブロブ */
     .bg {
       position: fixed;
       inset: 0;
       z-index: -1;
-      pointer-events: none;
       overflow: hidden;
-      background:
-        radial-gradient(1200px 600px at 50% -10%, rgba(255,255,255,.06), transparent 60%),
-        radial-gradient(900px 400px at 50% 120%, rgba(0,0,0,.18), transparent 60%);
     }
-    .blob, .ring {
+    .blob {
       position: absolute;
-      filter: blur(30px);
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.5;
       will-change: transform;
-      transform: translate3d(0,0,0);
-      opacity: .9;
     }
-    /* ぼんやりした色の塊（Appleサイトの抽象グラデ風） */
     .b1 {
-      width: 52vw; height: 52vw;
-      left: -10vw; top: -8vw;
-      background: radial-gradient(circle at 40% 40%,
-          rgba(var(--c2), .60), rgba(var(--c2), .15) 55%, transparent 70%);
-      mix-blend-mode: screen;
+      width: 60vw; height: 60vw;
+      left: -10vw; top: -10vh;
+      background: radial-gradient(circle, rgba(var(--c1), 0.4), transparent 70%);
     }
     .b2 {
-      width: 60vw; height: 60vw;
-      right: -16vw; top: 10vh;
-      background: radial-gradient(circle at 60% 40%,
-          rgba(var(--c3), .55), rgba(var(--c3), .12) 60%, transparent 75%);
-      mix-blend-mode: screen;
+      width: 50vw; height: 50vw;
+      right: -15vw; top: 20vh;
+      background: radial-gradient(circle, rgba(var(--c2), 0.3), transparent 70%);
     }
     .b3 {
       width: 70vw; height: 70vw;
-      left: 10vw; bottom: -20vw;
-      background: radial-gradient(circle at 50% 50%,
-          rgba(var(--c1), .45), rgba(var(--c1), .10) 60%, transparent 80%);
-      mix-blend-mode: screen;
-    }
-    /* 輪っかのグロー（控えめなリムライト感） */
-    .ring {
-      filter: blur(0); /* リングはシャープめ */
-      opacity: .5;
-    }
-    .r1, .r2 {
-      width: 70vmin; height: 70vmin; border-radius: 50%;
-      left: 50%; top: 55%;
-      transform: translate(-50%, -50%);
-      background:
-        radial-gradient(closest-side, transparent 72%, rgba(255,255,255,.08) 73% 76%, transparent 77%),
-        radial-gradient(closest-side, rgba(255,255,255,.05), transparent 70%);
-      mix-blend-mode: overlay;
-    }
-    .r2 { transform: translate(-50%, -50%) scale(1.18); opacity:.35; }
-
-    /* ライトモードは混色を微調整 */
-    @media (prefers-color-scheme: light) {
-      .blob { mix-blend-mode: multiply; opacity:.9; filter: blur(32px); }
-      .r1, .r2 { mix-blend-mode: soft-light; }
+      left: 10vw; bottom: -20vh;
+      background: radial-gradient(circle, rgba(var(--c3), 0.35), transparent 70%);
     }
 
-    /* ===== コンテンツ ===== */
+    /* セクションは背景透明 */
     section {
       min-height: 100svh;
-      display: grid;
-      place-items: center;
-      padding: clamp(24px, 4vw, 64px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
       text-align: center;
+      padding: 24px;
     }
-    .inner {
-      max-width: 940px;
-      width: 100%;
-      animation: fadein .8s ease-out both;
-    }
-    @keyframes fadein { from {opacity:0; transform: translateY(8px)} to {opacity:1; transform:none} }
 
     h1 {
-      margin: 0;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      line-height: 1.06;
       font-size: clamp(28px, 7vw, 64px);
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.02em;
     }
     .sub {
       margin-top: 14px;
       font-size: clamp(14px, 3.4vw, 18px);
-      color: var(--sub);
+      color: var(--sub-light);
     }
 
-    /* Apple風シェブロン矢印（タップしやすいヒットエリア） */
-    .arrow-wrap { margin-top: clamp(24px, 5vw, 48px); display:flex; justify-content:center; }
+    /* Apple風シェブロン矢印 */
+    .arrow-wrap { margin-top: 40px; }
     .arrow-hit {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 56px; height: 56px; border-radius: 50%;
-      text-decoration: none; -webkit-tap-highlight-color: transparent;
-      transition: background .2s ease;
+      display: inline-flex;
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      transition: background 0.3s;
     }
-    .arrow-hit:hover { background: rgba(255,255,255,.08); }
-    @media (prefers-color-scheme: light) { .arrow-hit:hover { background: rgba(0,0,0,.06); } }
+    .arrow-hit:hover { background: rgba(255,255,255,0.1); }
     .arrow-down {
       width: 28px; height: 28px;
-      border-bottom: 2px solid var(--sub);
-      border-right: 2px solid var(--sub);
-      border-radius: 2px;
+      border-bottom: 2px solid var(--sub-light);
+      border-right: 2px solid var(--sub-light);
       transform: rotate(45deg);
-      transition: border-color .25s ease, transform .25s ease;
-      animation: arrow-bounce 1.6s infinite;
+      border-radius: 2px;
+      animation: bounce 1.6s infinite;
     }
-    .arrow-hit:hover .arrow-down { border-color: var(--fg); }
-    @keyframes arrow-bounce {
+    @keyframes bounce {
       0%, 100% { transform: rotate(45deg) translate(0,0); }
-      50%      { transform: rotate(45deg) translate(4px,4px); }
+      50% { transform: rotate(45deg) translate(4px,4px); }
     }
 
-    /* 二択・結果 */
-    h2 { margin: 0 0 12px; font-size: clamp(20px, 5.5vw, 32px); letter-spacing: -0.01em; }
-    .buttons { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:6px; }
+    /* Apple風ガラスボタン */
+    .buttons {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
     button {
-      background: var(--accent); color:#fff; border:none;
-      padding: 12px 18px; border-radius: 12px; font-size: 1rem;
-      cursor: pointer; transition: background .2s ease, transform .05s ease;
+      padding: 12px 20px;
+      font-size: 1rem;
+      border-radius: 12px;
+      color: var(--fg-light);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      backdrop-filter: blur(12px);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.1s;
     }
-    button:active { transform: translateY(1px); }
-    button:hover  { background: var(--hover); }
+    button:hover {
+      background: rgba(255,255,255,0.15);
+    }
+    button:active {
+      transform: translateY(1px);
+    }
 
+    /* 結果表示 */
     .result {
-      margin-top: 18px; font-size: 1.2rem;
-      opacity: 0; transform: translateY(8px);
-      transition: opacity .35s ease, transform .35s ease;
+      margin-top: 20px;
+      font-size: 1.2rem;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.4s ease;
     }
-    .result.show { opacity:1; transform: translateY(0); }
-
-    /* 下セクションのふわっと出現 */
-    .reveal { opacity:0; transform: translateY(10px); transition: opacity .5s ease, transform .5s ease; }
-    .reveal.on { opacity:1; transform:none; }
+    .result.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body>
-  <!-- 背景（固定レイヤー） -->
-  <div class="bg" aria-hidden="true">
+  <!-- 背景 -->
+  <div class="bg">
     <div class="blob b1"></div>
     <div class="blob b2"></div>
     <div class="blob b3"></div>
-    <div class="ring r1"></div>
-    <div class="ring r2"></div>
   </div>
 
-  <!-- Hero -->
+  <!-- 上部 -->
   <section id="top">
-    <div class="inner">
+    <div>
       <h1>おまるん元気にしてるかい？</h1>
-
       <div class="arrow-wrap">
-        <a class="arrow-hit" href="#choice" aria-label="下へスクロール">
-          <i class="arrow-down" aria-hidden="true"></i>
-        </a>
+        <a href="#choice" class="arrow-hit"><div class="arrow-down"></div></a>
       </div>
     </div>
   </section>
 
-  <!-- Choice -->
+  <!-- 下部 -->
   <section id="choice">
-    <div class="inner reveal">
+    <div>
       <h2>今のおまるんは</h2>
       <div class="buttons">
-        <button type="button" data-choice="sad">さみしい</button>
-        <button type="button" data-choice="fine">さみしくない</button>
+        <button data-choice="sad">さみしい</button>
+        <button data-choice="fine">さみしくない</button>
       </div>
-      <div id="result" class="result" role="status" aria-live="polite"></div>
+      <div id="result" class="result"></div>
     </div>
   </section>
 
   <script>
-    // ===== 二択の結果表示 =====
+    // パララックス
+    const blobs = document.querySelectorAll('.blob');
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      blobs.forEach((b, i) => {
+        const factor = (i+1) * 0.04;
+        b.style.transform = `translateY(${y * factor}px)`;
+      });
+    });
+
+    // ボタン動作
     const resultDiv = document.getElementById('result');
     document.querySelectorAll('button[data-choice]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const t = btn.getAttribute('data-choice');
-        resultDiv.textContent = (t === 'sad')
+        const type = btn.dataset.choice;
+        resultDiv.textContent = type === 'sad'
           ? '明日なるはやでいける様にがんばります'
           : 'えらい！さすがおちゃんまる';
         resultDiv.classList.add('show');
       });
     });
-
-    // ===== スクロール演出（背景パララックス & セクションのリビール） =====
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // 背景パララックス：各レイヤーに異なる係数でY移動＋微妙なX揺れ
-    const layers = [
-      { el: document.querySelector('.b1'), y: 0.06, x: 6 },
-      { el: document.querySelector('.b2'), y: 0.10, x: -8 },
-      { el: document.querySelector('.b3'), y: 0.14, x: 10 },
-      { el: document.querySelector('.r1'), y: 0.04, x: 4 },
-      { el: document.querySelector('.r2'), y: 0.05, x: -5 },
-    ];
-
-    let ticking = false;
-    function onScroll() {
-      if (ticking || prefersReduced) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        const s = window.scrollY || window.pageYOffset;
-        const wave = Math.sin(s / 240); // ゆったり揺れる
-        layers.forEach(l => {
-          if (!l.el) return;
-          const tx = wave * l.x;               // Xはわずかに
-          const ty = s * l.y;                  // Yは係数で
-          l.el.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
-        });
-        ticking = false;
-      });
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll(); // 初期位置
-
-    // 下セクションふわっと
-    const revealEl = document.querySelector('.reveal');
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
-    }, { threshold: 0.18 });
-    io.observe(revealEl);
   </script>
 </body>
 </html>
