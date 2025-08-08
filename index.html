@@ -1,212 +1,240 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>おまるん元気にしてるかい？</title>
-  <meta name="description" content="おまるん元気にしてるかい？" />
-  <style>
-    :root {
-      --fg-light: #f5f5f7;
-      --fg-dark: #0a0a0a;
-      --sub-light: #a1a1a6;
-      --sub-dark: #6e6e73;
-      --accent: #0a84ff;
-      --hover: #0071e3;
-      --c1: 255, 255, 255;
-      --c2: 160, 160, 160;
-      --c3: 60, 60, 60;
-    }
-    @media (prefers-color-scheme: light) {
-      :root {
-        --fg-light: #0a0a0a;
-        --fg-dark: #f5f5f7;
-        --sub-light: #6e6e73;
-        --sub-dark: #a1a1a6;
-        --accent: #0071e3;
-        --hover: #005bb5;
-      }
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>おまるん元気にしてるかい？</title>
+<meta name="description" content="おまるん元気にしてるかい？" />
+<style>
+  /* ==== ダーク固定・モノトーン ==== */
+  :root{
+    --bg: #0a0a0a;         /* 背景のベース（.bg に塗る） */
+    --fg: #f5f5f7;         /* 文字色（高コントラスト） */
+    --sub: #a1a1a6;        /* 補助テキスト */
+    --muted: rgba(255,255,255,.28); /* 線・矢印などの薄色 */
+    --muted-strong: rgba(255,255,255,.45);
+  }
 
-    html, body {
-      margin: 0;
-      background: var(--fg-dark);
-      color: var(--fg-light);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-                   "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-      -webkit-font-smoothing: antialiased;
-      scroll-behavior: smooth;
-    }
+  /* 全体は背景を“塗らない” → 背景レイヤーが透けて見える */
+  html, body{
+    margin:0;
+    background: transparent;
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+                 "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "YuGothic",
+                 "Meiryo", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
 
-    /* 背景ブロブ */
-    .bg {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      overflow: hidden;
-    }
-    .blob {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(60px);
-      opacity: 0.5;
-      will-change: transform;
-    }
-    .b1 {
-      width: 60vw; height: 60vw;
-      left: -10vw; top: -10vh;
-      background: radial-gradient(circle, rgba(var(--c1), 0.4), transparent 70%);
-    }
-    .b2 {
-      width: 50vw; height: 50vw;
-      right: -15vw; top: 20vh;
-      background: radial-gradient(circle, rgba(var(--c2), 0.3), transparent 70%);
-    }
-    .b3 {
-      width: 70vw; height: 70vw;
-      left: 10vw; bottom: -20vh;
-      background: radial-gradient(circle, rgba(var(--c3), 0.35), transparent 70%);
-    }
+  /* ===== 背景（固定レイヤー）：モノトーンの抽象ブロブ＋かすかなグロー ===== */
+  .bg{
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+    /* ベース色はここで塗る */
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(255,255,255,.06), transparent 60%),
+      var(--bg);
+  }
+  .blob, .glow{
+    position:absolute;
+    will-change: transform;
+    transform: translate3d(0,0,0);
+  }
+  /* ぼんやりした“光の塊”を白〜グレーだけで作る（モノトーン） */
+  .b1{
+    width:60vw; height:60vw; left:-12vw; top:-14vh;
+    background: radial-gradient(circle at 40% 40%, rgba(255,255,255,.35), rgba(255,255,255,.10) 60%, transparent 75%);
+    filter: blur(50px);
+    mix-blend-mode: screen;
+  }
+  .b2{
+    width:64vw; height:64vw; right:-18vw; top:12vh;
+    background: radial-gradient(circle at 60% 40%, rgba(255,255,255,.30), rgba(255,255,255,.08) 60%, transparent 76%);
+    filter: blur(54px);
+    mix-blend-mode: screen;
+  }
+  .b3{
+    width:72vw; height:72vw; left:6vw; bottom:-20vh;
+    background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.26), rgba(255,255,255,.06) 60%, transparent 80%);
+    filter: blur(58px);
+    mix-blend-mode: screen;
+  }
+  /* 薄いリング光（控えめ） */
+  .glow{
+    width:70vmin; height:70vmin; left:50%; top:55%;
+    transform: translate(-50%,-50%);
+    background:
+      radial-gradient(closest-side, transparent 73%, rgba(255,255,255,.10) 74% 76%, transparent 77%),
+      radial-gradient(closest-side, rgba(255,255,255,.08), transparent 70%);
+    border-radius:50%;
+    mix-blend-mode: overlay;
+    opacity:.45;
+  }
 
-    /* セクションは背景透明 */
-    section {
-      min-height: 100svh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 24px;
-    }
+  /* ===== コンテンツ（背景は透明） ===== */
+  section{
+    min-height:100svh;
+    display:grid;
+    place-items:center;
+    padding: clamp(24px, 4vw, 64px);
+    text-align:center;
+    background: transparent;
+  }
+  .inner{ max-width:940px; width:100%; }
 
-    h1 {
-      font-size: clamp(28px, 7vw, 64px);
-      font-weight: 700;
-      margin: 0;
-      letter-spacing: -0.02em;
-    }
-    .sub {
-      margin-top: 14px;
-      font-size: clamp(14px, 3.4vw, 18px);
-      color: var(--sub-light);
-    }
+  h1{
+    margin:0;
+    font-weight:700;
+    letter-spacing:-0.02em;
+    line-height:1.06;
+    font-size: clamp(28px, 7vw, 64px);
+  }
+  .sub{
+    margin-top:14px;
+    font-size: clamp(14px, 3.4vw, 18px);
+    color: var(--sub);
+  }
 
-    /* Apple風シェブロン矢印 */
-    .arrow-wrap { margin-top: 40px; }
-    .arrow-hit {
-      display: inline-flex;
-      width: 56px; height: 56px;
-      border-radius: 50%;
-      justify-content: center;
-      align-items: center;
-      text-decoration: none;
-      transition: background 0.3s;
-    }
-    .arrow-hit:hover { background: rgba(255,255,255,0.1); }
-    .arrow-down {
-      width: 28px; height: 28px;
-      border-bottom: 2px solid var(--sub-light);
-      border-right: 2px solid var(--sub-light);
-      transform: rotate(45deg);
-      border-radius: 2px;
-      animation: bounce 1.6s infinite;
-    }
-    @keyframes bounce {
-      0%, 100% { transform: rotate(45deg) translate(0,0); }
-      50% { transform: rotate(45deg) translate(4px,4px); }
-    }
+  /* ===== Appleっぽい下向きシェブロン ===== */
+  .arrow-wrap{ margin-top: clamp(28px, 6vw, 48px); display:flex; justify-content:center; }
+  .arrow-hit{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:56px; height:56px; border-radius:50%;
+    text-decoration:none; -webkit-tap-highlight-color:transparent;
+    transition: background .2s ease;
+  }
+  .arrow-hit:hover{ background: rgba(255,255,255,.06); }
+  .arrow{
+    width:28px; height:28px;
+    border-bottom: 2px solid var(--muted);
+    border-right:  2px solid var(--muted);
+    border-radius:2px;
+    transform: rotate(45deg);
+    animation: bounce 1.6s infinite;
+    transition: border-color .25s ease;
+  }
+  .arrow-hit:hover .arrow{ border-color: var(--muted-strong); }
+  @keyframes bounce{
+    0%,100%{ transform: rotate(45deg) translate(0,0); }
+    50%    { transform: rotate(45deg) translate(4px,4px); }
+  }
 
-    /* Apple風ガラスボタン */
-    .buttons {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 20px;
-    }
-    button {
-      padding: 12px 20px;
-      font-size: 1rem;
-      border-radius: 12px;
-      color: var(--fg-light);
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.2);
-      backdrop-filter: blur(12px);
-      cursor: pointer;
-      transition: background 0.3s, transform 0.1s;
-    }
-    button:hover {
-      background: rgba(255,255,255,0.15);
-    }
-    button:active {
-      transform: translateY(1px);
-    }
+  /* ===== 二択エリア ===== */
+  h2{
+    margin:0 0 12px;
+    font-size: clamp(20px, 5.5vw, 32px);
+    letter-spacing:-0.01em;
+  }
 
-    /* 結果表示 */
-    .result {
-      margin-top: 20px;
-      font-size: 1.2rem;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: all 0.4s ease;
-    }
-    .result.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  </style>
+  /* Appleっぽい“ガラス”ボタン（モノトーン） */
+  .buttons{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:6px; }
+  button{
+    color: var(--fg);
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.18);
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    backdrop-filter: saturate(160%) blur(12px);
+    -webkit-backdrop-filter: saturate(160%) blur(12px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.10),
+                0 0 0 0 rgba(255,255,255,0); /* hover時にだけ外側を足す */
+    transition: background .2s ease, box-shadow .2s ease, transform .05s ease;
+  }
+  button:hover{
+    background: rgba(255,255,255,.10);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14),
+                0 6px 20px rgba(0,0,0,.20);
+  }
+  button:active{ transform: translateY(1px); }
+
+  /* 結果表示 */
+  .result{
+    margin-top:18px;
+    font-size:1.2rem;
+    opacity:0; transform: translateY(8px);
+    transition: opacity .35s ease, transform .35s ease;
+  }
+  .result.show{ opacity:1; transform: translateY(0); }
+</style>
 </head>
 <body>
-  <!-- 背景 -->
-  <div class="bg">
+  <!-- 背景レイヤー（ここにベース色も塗る） -->
+  <div class="bg" aria-hidden="true">
     <div class="blob b1"></div>
     <div class="blob b2"></div>
     <div class="blob b3"></div>
+    <div class="glow"></div>
   </div>
 
-  <!-- 上部 -->
+  <!-- Hero -->
   <section id="top">
-    <div>
+    <div class="inner">
       <h1>おまるん元気にしてるかい？</h1>
+      <p class="sub">（テキストはこのまま好きに編集してOK）</p>
+
       <div class="arrow-wrap">
-        <a href="#choice" class="arrow-hit"><div class="arrow-down"></div></a>
+        <a class="arrow-hit" href="#choice" aria-label="下へスクロール">
+          <i class="arrow" aria-hidden="true"></i>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- 下部 -->
+  <!-- Choice -->
   <section id="choice">
-    <div>
+    <div class="inner">
       <h2>今のおまるんは</h2>
       <div class="buttons">
-        <button data-choice="sad">さみしい</button>
-        <button data-choice="fine">さみしくない</button>
+        <button type="button" data-choice="sad">さみしい</button>
+        <button type="button" data-choice="fine">さみしくない</button>
       </div>
-      <div id="result" class="result"></div>
+      <div id="result" class="result" role="status" aria-live="polite"></div>
     </div>
   </section>
 
-  <script>
-    // パララックス
-    const blobs = document.querySelectorAll('.blob');
-    window.addEventListener('scroll', () => {
-      const y = window.scrollY;
-      blobs.forEach((b, i) => {
-        const factor = (i+1) * 0.04;
-        b.style.transform = `translateY(${y * factor}px)`;
+<script>
+  // ===== モノトーン背景のパララックス（Yにだけやさしく追従） =====
+  const layers = [
+    { el: document.querySelector('.b1'), y: 0.06, x:  6 },
+    { el: document.querySelector('.b2'), y: 0.10, x: -8 },
+    { el: document.querySelector('.b3'), y: 0.14, x: 10 },
+    { el: document.querySelector('.glow'), y: 0.04, x: -4 },
+  ];
+  let ticking = false;
+  function onScroll(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const s = window.scrollY || window.pageYOffset;
+      const wave = Math.sin(s / 240); // 横にほんの少し揺れる
+      layers.forEach(l => {
+        if (!l.el) return;
+        l.el.style.transform = `translate3d(${wave*l.x}px, ${s*l.y}px, 0)`;
       });
+      ticking = false;
     });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll(); // 初期反映
 
-    // ボタン動作
-    const resultDiv = document.getElementById('result');
-    document.querySelectorAll('button[data-choice]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const type = btn.dataset.choice;
-        resultDiv.textContent = type === 'sad'
-          ? '明日なるはやでいける様にがんばります'
-          : 'えらい！さすがおちゃんまる';
-        resultDiv.classList.add('show');
-      });
+  // ===== 二択の結果表示（テキストは自由に編集OK） =====
+  const resultDiv = document.getElementById('result');
+  document.querySelectorAll('button[data-choice]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const t = btn.getAttribute('data-choice');
+      resultDiv.textContent = (t === 'sad')
+        ? '明日なるはやでいける様にがんばります'
+        : 'えらい！さすがおちゃんまる';
+      resultDiv.classList.add('show');
     });
-  </script>
+  });
+</script>
 </body>
 </html>
